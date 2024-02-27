@@ -1,5 +1,6 @@
 import app from '@adonisjs/core/services/app'
 import { HttpContext, ExceptionHandler } from '@adonisjs/core/http'
+import pg from 'pg'
 
 export default class HttpExceptionHandler extends ExceptionHandler {
   /**
@@ -13,6 +14,10 @@ export default class HttpExceptionHandler extends ExceptionHandler {
    * response to the client
    */
   async handle(error: unknown, ctx: HttpContext) {
+    if (error instanceof pg.DatabaseError) {
+      ctx.response.status(500).send({status: 500, code: error.code, message: error.routine})
+      return
+    }
     return super.handle(error, ctx)
   }
 
