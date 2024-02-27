@@ -11,6 +11,14 @@ export default class extends BaseSchema {
       table.string('firstname', 100).notNullable()
       table.string('lastname', 100).notNullable()
 
+      table
+        .integer('district_id')
+        .unsigned()
+        .references('id')
+        .inTable('districts')
+        .onDelete('CASCADE')
+        .nullable()
+
       table.timestamp('created_at').notNullable()
       table.timestamp('updated_at').nullable()
     })
