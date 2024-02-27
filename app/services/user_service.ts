@@ -3,6 +3,8 @@ import NotFoundException from '#exceptions/not_found_exception'
 import User from '#models/user'
 import { createUserValidator, updateUserValidator } from '#validators/user'
 import { HttpContext } from '@adonisjs/core/http'
+import { RolesEnum } from '../enums/roles_enum.js'
+import district_service from './district_service.js'
 
 class UserService {
   private async findUserById(id: number) {
@@ -14,13 +16,20 @@ class UserService {
   }
   public async createUser({ request }: HttpContext) {
     const payload = await request.validateUsing(createUserValidator)
+    if (payload.roleId === RolesEnum.SUPER_USER) {
+      return await User.create(payload)
+    }
+    if (payload.roleId !== RolesEnum.SUPER_USER && !payload.districtId) {
+      throw new BadRequestException('districtId is required')
+    }
+    await district_service.findDistrictById(payload.districtId!)
     return await User.create(payload)
   }
-  
+
   public async getAllUsers() {
     return await User.all()
   }
-  
+
   public async getUser({ params }: HttpContext) {
     return await this.findUserById(+params.id)
   }
