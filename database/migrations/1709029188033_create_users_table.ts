@@ -1,5 +1,6 @@
 import { BaseSchema } from '@adonisjs/lucid/schema'
 import { RolesEnum } from '../../app/enums/roles_enum.js'
+import hash from '@adonisjs/core/services/hash'
 
 export default class extends BaseSchema {
   protected tableName = 'users'
@@ -19,7 +20,6 @@ export default class extends BaseSchema {
         .inTable('roles')
         .defaultTo(RolesEnum.VISITOR)
 
-
       table
         .integer('district_id')
         .unsigned()
@@ -30,6 +30,18 @@ export default class extends BaseSchema {
 
       table.timestamp('created_at').notNullable()
       table.timestamp('updated_at').nullable()
+    })
+
+    this.defer(async (db) => {
+      await db.table(this.tableName).insert({
+        id: 1,
+        email: 'admin@gmail.com',
+        password: await hash.make('motdepasse'),
+        firstname: 'pierre',
+        lastname: 'rogier',
+        role_id: RolesEnum.SUPER_USER,
+        created_at: new Date(),
+      })
     })
   }
 

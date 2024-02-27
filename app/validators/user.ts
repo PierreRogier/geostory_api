@@ -7,6 +7,7 @@ export const createUserValidator = vine.compile(
     firstname: vine.string().trim().escape().maxLength(100),
     lastname: vine.string().trim().escape().maxLength(100),
     roleId: vine.number().optional(),
+    districtId: vine.number().optional(),
   })
 )
 
